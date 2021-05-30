@@ -1,0 +1,18 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="questionService" class="ru.vitalib.otus.homework.service.QuestionServiceImpl">
+        <constructor-arg name="questionDao" ref="questionDao" />
+    </bean>
+
+    <bean id="questionDao" class="ru.vitalib.otus.homework.dao.QuestionCSVDaoImpl">
+        <constructor-arg name="csvResourcePath" value="questions.csv" />
+    </bean>
+
+    <bean id="questionsView" class="ru.vitalib.otus.homework.view.QuestionsViewImpl">
+        <constructor-arg name="questionService" ref="questionService" />
+    </bean>
+
+</beans>
