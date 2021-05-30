@@ -8,11 +8,10 @@
     </bean>
 
     <bean id="questionDao" class="ru.vitalib.otus.homework.dao.QuestionCSVDaoImpl">
-        <constructor-arg name="csvResourcePath" value="questions.csv" />
+        <constructor-arg name="csvResourcePath" value="/questions.csv" />
     </bean>
 
     <bean id="questionsView" class="ru.vitalib.otus.homework.view.QuestionsViewImpl">
         <constructor-arg name="questionService" ref="questionService" />
     </bean>
-
 </beans>

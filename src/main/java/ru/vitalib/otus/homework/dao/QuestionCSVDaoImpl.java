@@ -8,6 +8,8 @@ import ru.vitalib.otus.homework.model.Question;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -24,8 +26,8 @@ public class QuestionCSVDaoImpl implements QuestionDao {
 
     @Override
     public List<Question> getQuestions()  {
-        URL resource = getClass().getClassLoader().getResource(csvResourcePath);
-        try (CSVReader reader = new CSVReader(new FileReader(resource.getFile()))) {
+        InputStream resourceAsStream = getClass().getResourceAsStream(csvResourcePath);
+        try (CSVReader reader = new CSVReader(new InputStreamReader(resourceAsStream))) {
             return reader.readAll().stream()
                     .map(Arrays::asList)
                     .map(QuestionConverter::convert)
