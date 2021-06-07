@@ -9,9 +9,15 @@
 
     <bean id="questionDao" class="ru.vitalib.otus.homework.dao.QuestionCSVDaoImpl">
         <constructor-arg name="csvResourcePath" value="/questions.csv" />
+        <constructor-arg name="questionConverter" ref="questionConverter" />
     </bean>
 
     <bean id="questionsView" class="ru.vitalib.otus.homework.view.QuestionsViewImpl">
         <constructor-arg name="questionService" ref="questionService" />
+    </bean>
+
+    <bean id="answerConverter" class="ru.vitalib.otus.homework.converter.AnswerConverter"/>
+    <bean id="questionConverter" class="ru.vitalib.otus.homework.converter.QuestionConverter">
+        <constructor-arg name="answerConverter" ref="answerConverter" />
     </bean>
 </beans>
