@@ -13,8 +13,4 @@ public class QuestionTestDaoImpl implements QuestionDao {
         return questions;
     }
 
-    @Override
-    public void addQuestion(Question question) {
-        questions.add(question);
-    }
 }

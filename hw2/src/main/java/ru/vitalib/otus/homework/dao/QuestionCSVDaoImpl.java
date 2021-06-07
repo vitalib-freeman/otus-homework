@@ -37,9 +37,4 @@ public class QuestionCSVDaoImpl implements QuestionDao {
       throw new RuntimeException(e);
     }
   }
-
-  @Override
-  public void addQuestion(Question question) {
-    throw new NotImplementedException();
-  }
 }
