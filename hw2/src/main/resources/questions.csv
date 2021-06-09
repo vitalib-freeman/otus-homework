@@ -1,5 +1,5 @@
-Linux change directory command,ls,cd,cat
-View path variable,echo PATH,echo $PATH,cat $PATH
-Linux based operation systems,Ubuntu,Mac OS,Debian,Cent OS
-Unix creators,Ken Thompson,Denis Ritchie,Bill Gates,Richard Stolman
-Linux symbol,penguin,windows,antelope
+1,Linux change directory command,1,ls,false,2,cd,true,3,cat,false
+2,View path variable,1,echo PATH,false,2,echo $PATH,true,3,cat $PATH,false
+3,Linux based operation systems,1,Ubuntu,true,2,Mac OS,false,3,Debian,true,4,Cent OS,true
+4,Unix creators,1,Ken Thompson,true,2,Denis Ritchie,true,3,Bill Gates,false,4,Richard Stolman,false
+5,Linux symbol,1,penguin,true,2,windows,false,3,antelope,false

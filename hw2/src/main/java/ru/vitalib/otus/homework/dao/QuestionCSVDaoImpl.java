@@ -2,8 +2,10 @@ package ru.vitalib.otus.homework.dao;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
-import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 import ru.vitalib.otus.homework.converter.QuestionConverter;
+import ru.vitalib.otus.homework.exceptions.QuestionFileException;
 import ru.vitalib.otus.homework.model.Question;
 
 import java.io.IOException;
@@ -14,12 +16,13 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@Repository
 public class QuestionCSVDaoImpl implements QuestionDao {
   private static Logger logger = Logger.getLogger(QuestionCSVDaoImpl.class.getName());
   private final String csvResourcePath;
   private final QuestionConverter questionConverter;
 
-  public QuestionCSVDaoImpl(String csvResourcePath, QuestionConverter questionConverter) {
+  public QuestionCSVDaoImpl(@Value("${csvResourcePath}") String csvResourcePath, QuestionConverter questionConverter) {
     this.csvResourcePath = csvResourcePath;
     this.questionConverter = questionConverter;
   }
@@ -34,7 +37,7 @@ public class QuestionCSVDaoImpl implements QuestionDao {
          .collect(Collectors.toList());
     } catch (IOException | CsvException e) {
       logger.severe(String.format("Failed to parse csv file %s, error %s", csvResourcePath, e));
-      throw new RuntimeException(e);
+      throw new QuestionFileException(e);
     }
   }
 }

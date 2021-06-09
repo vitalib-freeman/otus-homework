@@ -1,4 +1,4 @@
-package ru.vitalib.otus.homework;
+package ru.vitalib.otus.homework.service;
 
 import org.junit.jupiter.api.Test;
 import ru.vitalib.otus.homework.dao.QuestionDao;
@@ -29,6 +29,6 @@ class QuestionServiceTest {
   }
 
   private Question getSimpleQuestion(String question, String answer) {
-    return new Question().setText(question).setAnswers(List.of(new Answer(answer)));
+    return new Question().setText(question).setAnswers(List.of(new Answer(answer, 0, true)));
   }
 }

@@ -1,19 +1,68 @@
 package ru.vitalib.otus.homework.view;
 
+import org.springframework.stereotype.Controller;
+import ru.vitalib.otus.homework.model.Answer;
+import ru.vitalib.otus.homework.model.Question;
+import ru.vitalib.otus.homework.model.Score;
+import ru.vitalib.otus.homework.service.EvaluationService;
+import ru.vitalib.otus.homework.service.InputOutputService;
 import ru.vitalib.otus.homework.service.QuestionService;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Controller
 public class QuestionsViewImpl implements QuestionsView {
-    public final QuestionService questionService;
+  public final QuestionService questionService;
+  public final InputOutputService inputOutputService;
+  public final EvaluationService evaluationService;
 
-    public QuestionsViewImpl(QuestionService questionService) {
-        this.questionService = questionService;
-    }
+  public QuestionsViewImpl(QuestionService questionService,
+                           InputOutputService inputOutputService,
+                           EvaluationService evaluationService) {
+    this.questionService = questionService;
+    this.inputOutputService = inputOutputService;
+    this.evaluationService = evaluationService;
+  }
 
-    @Override
-    public void displayAllQuestions() {
-        questionService.getAllQuestions().forEach(question -> {
-            System.out.println(question.getText());
-            question.getAnswers().forEach(answer -> System.out.println('\t' + answer.getText()));
-        });
+  @Override
+  public void testUser() throws IOException {
+    Map<Integer, Set<Integer>> userAnswers = new HashMap<>();
+    inputOutputService.write("Hello, what is your name?");
+    String userName = inputOutputService.read();
+    inputOutputService.write(String.format("To pass you should answer correctly at least %d questions",
+       evaluationService.getMinimalScore()));
+    for (Question question : questionService.getAllQuestions()) {
+      inputOutputService.write(question.getId() + ") " + question.getText());
+      for (Answer answer : question.getAnswers()) {
+        inputOutputService.write("\t" + answer.getId() + ") " + answer.getText());
+      }
+      Set<Integer> answerIds = getUserAnswers();
+      userAnswers.put(question.getId(), answerIds);
     }
+    Score score = evaluationService.evaluate(questionService.getAllQuestions(), userAnswers);
+    inputOutputService.write(String.format("%s, your score is %d of %d", userName, score.getQuestionsWithCorrectAnswer(),
+       score.getTotalQuestions()));
+    inputOutputService.write(String.format("Result: %s pass", score.isHasPass() ? "" : "not"));
+  }
+
+  private Set<Integer> getUserAnswers() throws IOException {
+    while (true) {
+      try {
+        return Stream.of(getAnswersIds())
+           .map(Integer::valueOf)
+           .collect(Collectors.toSet());
+      } catch (NumberFormatException ex) {
+        inputOutputService.write("Incorrect input. Please enter answer number(s) separated by comma or space ");
+      }
+    }
+  }
+
+  private String[] getAnswersIds() throws IOException {
+    return inputOutputService.read().trim().split("[\\s,]+");
+  }
 }
