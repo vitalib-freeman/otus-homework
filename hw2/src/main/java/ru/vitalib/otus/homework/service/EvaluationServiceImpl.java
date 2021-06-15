@@ -1,10 +1,10 @@
 package ru.vitalib.otus.homework.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 import ru.vitalib.otus.homework.model.Score;
+import ru.vitalib.otus.homework.model.UserAnswers;
 
 import java.util.List;
 import java.util.Map;
@@ -13,26 +13,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class EvaluationServiceImpl implements EvaluationService {
-  private final Long minScore;
-
-  public EvaluationServiceImpl(@Value("${minScore}") Long minScore) {
-    this.minScore = minScore;
-  }
-
   @Override
-  public Score evaluate(List<Question> allQuestions, Map<Integer, Set<Integer>> userAnswers) {
+  public Score evaluate(List<Question> allQuestions, UserAnswers userAnswers) {
     Map<Integer, Set<Integer>> correctAnswers = allQuestions.stream()
        .collect(Collectors.toMap(Question::getId, this::getCorrectAnswersIds));
-    long totalCorrect = userAnswers.entrySet().stream()
-       .filter(entry -> correctAnswers.get(entry.getKey()).containsAll(entry.getValue()))
-       .filter(entry -> correctAnswers.get(entry.getKey()).size() == entry.getValue().size())
+    long totalCorrect = userAnswers.getAnsweredQuestionsIds().stream()
+       .filter(questionId -> correctAnswers.get(questionId).containsAll(userAnswers.getAnswersIds(questionId)))
+       .filter(questionId -> correctAnswers.get(questionId).size() == userAnswers.getAnswersIds(questionId).size())
        .count();
-    return new Score((long) allQuestions.size(), totalCorrect, totalCorrect >= minScore);
-  }
-
-  @Override
-  public Long getMinimalScore() {
-    return minScore;
+    return new Score((long) allQuestions.size(), totalCorrect);
   }
 
   private Set<Integer> getCorrectAnswersIds(Question question) {

@@ -6,10 +6,7 @@ import org.mockito.Mockito;
 import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 import ru.vitalib.otus.homework.model.Score;
-import ru.vitalib.otus.homework.service.EvaluationService;
-import ru.vitalib.otus.homework.service.InputOutputService;
-import ru.vitalib.otus.homework.service.InputOutputServiceImpl;
-import ru.vitalib.otus.homework.service.QuestionService;
+import ru.vitalib.otus.homework.service.*;
 
 import java.io.*;
 import java.util.List;
@@ -29,8 +26,10 @@ class QuestionsViewImplTest {
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     InputOutputService inputOutputService = new InputOutputServiceImpl(userInput, output);
     EvaluationService evaluationService = mock(EvaluationService.class);
-    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 1L, true));
-    QuestionsViewImpl questionsView = new QuestionsViewImpl(questionService, inputOutputService, evaluationService);
+    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 1L));
+    AcceptableLevelService acceptableLevelService = mock(AcceptableLevelService.class);
+    when(acceptableLevelService.hasPass(any())).thenReturn(true);
+    QuestionsViewImpl questionsView = new QuestionsViewImpl(questionService, inputOutputService, evaluationService, acceptableLevelService);
 
     questionsView.testUser();
     String programOutput = output.toString();
@@ -50,8 +49,10 @@ class QuestionsViewImplTest {
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     InputOutputService inputOutputService = new InputOutputServiceImpl(userInput, output);
     EvaluationService evaluationService = mock(EvaluationService.class);
-    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 0L, false));
-    QuestionsViewImpl questionsView = new QuestionsViewImpl(questionService, inputOutputService, evaluationService);
+    AcceptableLevelService acceptableLevelService = mock(AcceptableLevelService.class);
+    when(acceptableLevelService.hasPass(any())).thenReturn(false);
+    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 0L));
+    QuestionsViewImpl questionsView = new QuestionsViewImpl(questionService, inputOutputService, evaluationService, acceptableLevelService);
 
     questionsView.testUser();
     String programOutput = output.toString();

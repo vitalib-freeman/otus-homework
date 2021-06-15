@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 import ru.vitalib.otus.homework.model.Score;
+import ru.vitalib.otus.homework.model.UserAnswers;
 
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,8 @@ class EvaluationServiceImplTest {
   public void testCorrectAnswer() {
     Question question = prepareSimpleQuestion();
 
-    EvaluationService evaluationService = new EvaluationServiceImpl(3L);
-    Score score = evaluationService.evaluate(List.of(question), Map.of(0, Set.of(0)));
+    EvaluationService evaluationService = new EvaluationServiceImpl();
+    Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(0))));
 
     assertEquals(1, score.getQuestionsWithCorrectAnswer());
     assertEquals(1, score.getTotalQuestions());
@@ -29,8 +30,8 @@ class EvaluationServiceImplTest {
   public void testIncorrectAnswer() {
     Question question = prepareSimpleQuestion();
 
-    EvaluationService evaluationService = new EvaluationServiceImpl(1L);
-    Score score = evaluationService.evaluate(List.of(question), Map.of(0, Set.of(1)));
+    EvaluationService evaluationService = new EvaluationServiceImpl();
+    Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(1))));
 
     assertEquals(0, score.getQuestionsWithCorrectAnswer());
     assertEquals(1, score.getTotalQuestions());
@@ -40,8 +41,8 @@ class EvaluationServiceImplTest {
   public void testMultipleIncorrectAnswers() {
     Question question = prepareSimpleQuestion();
 
-    EvaluationService evaluationService = new EvaluationServiceImpl(1L);
-    Score score = evaluationService.evaluate(List.of(question), Map.of(0, Set.of(0, 1)));
+    EvaluationService evaluationService = new EvaluationServiceImpl();
+    Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(0, 1))));
 
     assertEquals(0, score.getQuestionsWithCorrectAnswer());
     assertEquals(1, score.getTotalQuestions());

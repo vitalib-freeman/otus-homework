@@ -4,13 +4,13 @@ import org.springframework.stereotype.Controller;
 import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 import ru.vitalib.otus.homework.model.Score;
+import ru.vitalib.otus.homework.model.UserAnswers;
+import ru.vitalib.otus.homework.service.AcceptableLevelService;
 import ru.vitalib.otus.homework.service.EvaluationService;
 import ru.vitalib.otus.homework.service.InputOutputService;
 import ru.vitalib.otus.homework.service.QuestionService;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,34 +20,53 @@ public class QuestionsViewImpl implements QuestionsView {
   public final QuestionService questionService;
   public final InputOutputService inputOutputService;
   public final EvaluationService evaluationService;
+  public final AcceptableLevelService acceptableLevelService;
 
   public QuestionsViewImpl(QuestionService questionService,
                            InputOutputService inputOutputService,
-                           EvaluationService evaluationService) {
+                           EvaluationService evaluationService,
+                           AcceptableLevelService acceptableLevelService) {
     this.questionService = questionService;
     this.inputOutputService = inputOutputService;
     this.evaluationService = evaluationService;
+    this.acceptableLevelService = acceptableLevelService;
   }
 
   @Override
-  public void testUser() throws IOException {
-    Map<Integer, Set<Integer>> userAnswers = new HashMap<>();
-    inputOutputService.write("Hello, what is your name?");
-    String userName = inputOutputService.read();
-    inputOutputService.write(String.format("To pass you should answer correctly at least %d questions",
-       evaluationService.getMinimalScore()));
-    for (Question question : questionService.getAllQuestions()) {
-      inputOutputService.write(question.getId() + ") " + question.getText());
-      for (Answer answer : question.getAnswers()) {
-        inputOutputService.write("\t" + answer.getId() + ") " + answer.getText());
+  public void testUser() {
+    UserAnswers userAnswers = new UserAnswers();
+    try {
+      String userName = provideInfoAndGetUserName();
+      for (Question question : questionService.getAllQuestions()) {
+        userAnswers.addQuestionAnswers(question.getId(), getUserAnswers(userAnswers, question));
       }
-      Set<Integer> answerIds = getUserAnswers();
-      userAnswers.put(question.getId(), answerIds);
+      outputResult(userAnswers, userName);
+    } catch (IOException e) {
+      System.out.println("Error has occurred while writing/reading");
     }
+  }
+
+  private void outputResult(UserAnswers userAnswers, String userName) throws IOException {
     Score score = evaluationService.evaluate(questionService.getAllQuestions(), userAnswers);
     inputOutputService.write(String.format("%s, your score is %d of %d", userName, score.getQuestionsWithCorrectAnswer(),
        score.getTotalQuestions()));
-    inputOutputService.write(String.format("Result: %s pass", score.isHasPass() ? "" : "not"));
+    inputOutputService.write(String.format("Result: %s pass", acceptableLevelService.hasPass(score) ? "" : "not"));
+  }
+
+  private Set<Integer> getUserAnswers(UserAnswers userAnswers, Question question) throws IOException {
+    inputOutputService.write(question.getId() + ") " + question.getText());
+    for (Answer answer : question.getAnswers()) {
+      inputOutputService.write("\t" + answer.getId() + ") " + answer.getText());
+    }
+    return getUserAnswers();
+  }
+
+  private String provideInfoAndGetUserName() throws IOException {
+    inputOutputService.write("Hello, what is your name?");
+    String userName = inputOutputService.read();
+    inputOutputService.write(String.format("To pass you should answer correctly at least %d questions",
+       acceptableLevelService.getMinimalScore()));
+    return userName;
   }
 
   private Set<Integer> getUserAnswers() throws IOException {

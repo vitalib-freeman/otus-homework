@@ -1,12 +1,13 @@
 package ru.vitalib.otus.homework.converter;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 
 import java.util.List;
 
-@Service
+@Component
 public class QuestionConverter {
   private final AnswerConverter answerConverter;
 
