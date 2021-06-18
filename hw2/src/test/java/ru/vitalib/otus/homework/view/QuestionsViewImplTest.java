@@ -1,6 +1,7 @@
 package ru.vitalib.otus.homework.view;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.vitalib.otus.homework.model.Answer;
@@ -18,18 +19,29 @@ import static org.mockito.Mockito.when;
 
 class QuestionsViewImplTest {
 
-  @Test
-  public void testViewWithPassResult() throws IOException {
-    QuestionService questionService = Mockito.mock(QuestionService.class);
+  private QuestionService questionService;
+  private InputOutputServiceImpl inputOutputService;
+  private UserInteractionServiceImpl userInteractionService;
+  private EvaluationService evaluationService;
+  private QuestionsViewImpl questionsView;
+  private ByteArrayOutputStream output;
+
+  @BeforeEach
+  public void setUp() {
+    questionService = Mockito.mock(QuestionService.class);
     when(questionService.getAllQuestions()).thenReturn(List.of(prepareSimpleQuestion()));
     InputStream userInput = getClass().getResourceAsStream("/user_input.txt");
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
-    InputOutputService inputOutputService = new InputOutputServiceImpl(userInput, output);
-    EvaluationService evaluationService = mock(EvaluationService.class);
-    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 1L));
-    AcceptableLevelService acceptableLevelService = mock(AcceptableLevelService.class);
-    when(acceptableLevelService.hasPass(any())).thenReturn(true);
-    QuestionsViewImpl questionsView = new QuestionsViewImpl(questionService, inputOutputService, evaluationService, acceptableLevelService);
+    output = new ByteArrayOutputStream();
+    inputOutputService = new InputOutputServiceImpl(userInput, output);
+    userInteractionService = new UserInteractionServiceImpl(inputOutputService);
+    evaluationService = mock(EvaluationService.class);
+    questionsView = new QuestionsViewImpl(questionService, evaluationService, userInteractionService);
+
+  }
+
+  @Test
+  public void testViewWithPassResult() {
+    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 1L, true));
 
     questionsView.testUser();
     String programOutput = output.toString();
@@ -42,17 +54,8 @@ class QuestionsViewImplTest {
   }
 
   @Test
-  public void testViewWithNotPassResult() throws IOException {
-    QuestionService questionService = Mockito.mock(QuestionService.class);
-    when(questionService.getAllQuestions()).thenReturn(List.of(prepareSimpleQuestion()));
-    InputStream userInput = getClass().getResourceAsStream("/user_input.txt");
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
-    InputOutputService inputOutputService = new InputOutputServiceImpl(userInput, output);
-    EvaluationService evaluationService = mock(EvaluationService.class);
-    AcceptableLevelService acceptableLevelService = mock(AcceptableLevelService.class);
-    when(acceptableLevelService.hasPass(any())).thenReturn(false);
-    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 0L));
-    QuestionsViewImpl questionsView = new QuestionsViewImpl(questionService, inputOutputService, evaluationService, acceptableLevelService);
+  public void testViewWithNotPassResult() {
+    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 0L, false));
 
     questionsView.testUser();
     String programOutput = output.toString();
@@ -67,8 +70,6 @@ class QuestionsViewImplTest {
     question.setText("2 + 2 = ?");
     Answer correctAnswer = new Answer("4", 1, true);
     Answer incorrectAnswer = new Answer("5", 2, false);
-    correctAnswer.setQuestion(question);
-    incorrectAnswer.setQuestion(question);
     question.setAnswers(List.of(correctAnswer, incorrectAnswer));
     return question;
   }

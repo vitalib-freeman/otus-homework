@@ -16,7 +16,6 @@ public class AnswerConverter {
     for (int i = 0; i < rawAnswers.size(); i+=3) {
       Answer answer = new Answer(rawAnswers.get(i+1), Integer.valueOf(rawAnswers.get(i)),
          Boolean.parseBoolean(rawAnswers.get(i + 2)));
-      answer.setQuestion(question);
       answers.add(answer);
     }
     return answers;

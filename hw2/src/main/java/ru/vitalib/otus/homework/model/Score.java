@@ -3,10 +3,12 @@ package ru.vitalib.otus.homework.model;
 public class Score {
   private final long totalQuestions;
   private final long questionsWithCorrectAnswer;
+  private final boolean hasPass;
 
-  public Score(Long totalQuestions, long questionsWithCorrectAnswer) {
+  public Score(Long totalQuestions, long questionsWithCorrectAnswer, boolean hasPass) {
     this.totalQuestions = totalQuestions;
     this.questionsWithCorrectAnswer = questionsWithCorrectAnswer;
+    this.hasPass = hasPass;
   }
 
   public long getTotalQuestions() {
@@ -17,4 +19,7 @@ public class Score {
     return questionsWithCorrectAnswer;
   }
 
+  public boolean isHasPass() {
+    return hasPass;
+  }
 }

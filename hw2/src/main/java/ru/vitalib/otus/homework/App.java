@@ -14,14 +14,9 @@ import java.io.IOException;
 @ComponentScan
 @PropertySource("classpath:service.properties")
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(App.class);
         QuestionsView questionsView = context.getBean(QuestionsView.class);
         questionsView.testUser();
-    }
-
-    @Bean
-    public InputOutputService inputOutputService() {
-        return new InputOutputServiceImpl(System.in, System.out);
     }
 }

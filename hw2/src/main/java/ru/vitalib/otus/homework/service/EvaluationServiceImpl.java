@@ -13,6 +13,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class EvaluationServiceImpl implements EvaluationService {
+  private final SettingsService settingService;
+
+  public EvaluationServiceImpl(SettingsService settingService) {
+    this.settingService = settingService;
+  }
+
   @Override
   public Score evaluate(List<Question> allQuestions, UserAnswers userAnswers) {
     Map<Integer, Set<Integer>> correctAnswers = allQuestions.stream()
@@ -21,7 +27,8 @@ public class EvaluationServiceImpl implements EvaluationService {
        .filter(questionId -> correctAnswers.get(questionId).containsAll(userAnswers.getAnswersIds(questionId)))
        .filter(questionId -> correctAnswers.get(questionId).size() == userAnswers.getAnswersIds(questionId).size())
        .count();
-    return new Score((long) allQuestions.size(), totalCorrect);
+    boolean hasPass = totalCorrect >= settingService.getMinimalScore();
+    return new Score((long) allQuestions.size(), totalCorrect, hasPass);
   }
 
   private Set<Integer> getCorrectAnswersIds(Question question) {

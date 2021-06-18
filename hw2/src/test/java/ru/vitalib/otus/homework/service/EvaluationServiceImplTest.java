@@ -12,14 +12,16 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class EvaluationServiceImplTest {
 
   @Test
   public void testCorrectAnswer() {
     Question question = prepareSimpleQuestion();
+    SettingsService settingService = mock(SettingsService.class);
 
-    EvaluationService evaluationService = new EvaluationServiceImpl();
+    EvaluationService evaluationService = new EvaluationServiceImpl(settingService);
     Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(0))));
 
     assertEquals(1, score.getQuestionsWithCorrectAnswer());
@@ -29,8 +31,9 @@ class EvaluationServiceImplTest {
   @Test
   public void testIncorrectAnswer() {
     Question question = prepareSimpleQuestion();
+    SettingsService settingService = mock(SettingsService.class);
 
-    EvaluationService evaluationService = new EvaluationServiceImpl();
+    EvaluationService evaluationService = new EvaluationServiceImpl(settingService);
     Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(1))));
 
     assertEquals(0, score.getQuestionsWithCorrectAnswer());
@@ -40,8 +43,9 @@ class EvaluationServiceImplTest {
   @Test
   public void testMultipleIncorrectAnswers() {
     Question question = prepareSimpleQuestion();
+    SettingsService settingService = mock(SettingsService.class);
 
-    EvaluationService evaluationService = new EvaluationServiceImpl();
+    EvaluationService evaluationService = new EvaluationServiceImpl(settingService);
     Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(0, 1))));
 
     assertEquals(0, score.getQuestionsWithCorrectAnswer());
@@ -55,8 +59,6 @@ class EvaluationServiceImplTest {
     question.setText("2 + 2 = ?");
     Answer correctAnswer = new Answer("4", 0, true);
     Answer incorrectAnswer = new Answer("5", 1, false);
-    correctAnswer.setQuestion(question);
-    incorrectAnswer.setQuestion(question);
     question.setAnswers(List.of(correctAnswer, incorrectAnswer));
     return question;
   }
