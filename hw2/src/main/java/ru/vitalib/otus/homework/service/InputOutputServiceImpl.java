@@ -1,9 +1,14 @@
 package ru.vitalib.otus.homework.service;
 
-import java.io.*;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import ru.vitalib.otus.homework.exceptions.InputOutputException;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 public class InputOutputServiceImpl implements InputOutputService {
   public final BufferedReader reader;
@@ -16,30 +21,22 @@ public class InputOutputServiceImpl implements InputOutputService {
   }
 
   @Override
-  public void write(String data) throws IOException {
-    writer.write(data + "\n");
-    writer.flush();
-  }
+  public void write(String data) {
 
-  @Override
-  public String read() throws IOException {
-    return reader.readLine();
-  }
-
-  @Override
-  public Set<Integer> getAnswersIds() throws IOException {
-    while (true) {
-      try {
-        return Stream.of(getRawAnswersIds())
-           .map(Integer::valueOf)
-           .collect(Collectors.toSet());
-      } catch (NumberFormatException ex) {
-        write("Incorrect input. Please enter answer number(s) separated by comma or space ");
-      }
+    try {
+      writer.write(data + "\n");
+      writer.flush();
+    } catch (IOException e) {
+      throw new InputOutputException(e);
     }
   }
 
-  private String[] getRawAnswersIds() throws IOException {
-    return read().trim().split("[\\s,]+");
+  @Override
+  public String read() {
+    try {
+      return reader.readLine();
+    } catch (IOException e) {
+      throw new InputOutputException(e);
+    }
   }
 }

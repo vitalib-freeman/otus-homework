@@ -1,76 +1,53 @@
 package ru.vitalib.otus.homework.view;
 
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 import ru.vitalib.otus.homework.model.Score;
-import ru.vitalib.otus.homework.service.*;
+import ru.vitalib.otus.homework.model.UserAnswers;
+import ru.vitalib.otus.homework.service.EvaluationService;
+import ru.vitalib.otus.homework.service.QuestionService;
+import ru.vitalib.otus.homework.service.ResultsService;
+import ru.vitalib.otus.homework.service.TestingService;
+import ru.vitalib.otus.homework.service.UserService;
 
-import java.io.*;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class QuestionsViewImplTest {
 
   private QuestionService questionService;
-  private InputOutputServiceImpl inputOutputService;
-  private UserInteractionServiceImpl userInteractionService;
   private EvaluationService evaluationService;
   private QuestionsViewImpl questionsView;
-  private ByteArrayOutputStream output;
+  private UserService userService;
+  private TestingService testingService;
+  private ResultsService resultService;
 
-  @BeforeEach
-  public void setUp() {
+  @Test
+  public void viewTest() {
     questionService = Mockito.mock(QuestionService.class);
-    when(questionService.getAllQuestions()).thenReturn(List.of(prepareSimpleQuestion()));
-    InputStream userInput = getClass().getResourceAsStream("/user_input.txt");
-    output = new ByteArrayOutputStream();
-    inputOutputService = new InputOutputServiceImpl(userInput, output);
-    userInteractionService = new UserInteractionServiceImpl(inputOutputService);
-    evaluationService = mock(EvaluationService.class);
-    questionsView = new QuestionsViewImpl(questionService, evaluationService, userInteractionService);
-
-  }
-
-  @Test
-  public void testViewWithPassResult() {
-    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 1L, true));
-
-    questionsView.testUser();
-    String programOutput = output.toString();
-
-    assertTrue(programOutput.contains("Hello, what is your name?"));
-    assertTrue(programOutput.contains("2 + 2 = ?"));
-    assertTrue(programOutput.contains("1) 4"));
-    assertTrue(programOutput.contains("2) 5"));
-    assertTrue(programOutput.contains("Result:  pass"));
-  }
-
-  @Test
-  public void testViewWithNotPassResult() {
-    when(evaluationService.evaluate(any(), any())).thenReturn(new Score(1L, 0L, false));
+    List<Question> questions = List.of(new Question());
+    when(questionService.getAllQuestions()).thenReturn(questions);
+    userService = Mockito.mock(UserService.class);
+    String userName = "User";
+    when(userService.getUserName()).thenReturn(userName);
+    testingService = Mockito.mock(TestingService.class);
+    UserAnswers userAnswers = new UserAnswers();
+    when(testingService.getUserAnswers(questions)).thenReturn(userAnswers);
+    resultService = Mockito.mock(ResultsService.class);
+    evaluationService = Mockito.mock(EvaluationService.class);
+    Score resultScore = new Score(1, 1, true);
+    when(evaluationService.evaluate(questions, userAnswers)).thenReturn(resultScore);
+    questionsView = new QuestionsViewImpl(questionService, evaluationService, userService, testingService, resultService);
 
     questionsView.testUser();
-    String programOutput = output.toString();
 
-    assertTrue(programOutput.contains("Result: not pass"));
-  }
-
-  @NotNull
-  private Question prepareSimpleQuestion() {
-    Question question = new Question();
-    question.setId(1);
-    question.setText("2 + 2 = ?");
-    Answer correctAnswer = new Answer("4", 1, true);
-    Answer incorrectAnswer = new Answer("5", 2, false);
-    question.setAnswers(List.of(correctAnswer, incorrectAnswer));
-    return question;
+    verify(userService).getUserName();
+    verify(questionService).getAllQuestions();
+    verify(testingService).getUserAnswers(questions);
+    verify(evaluationService).evaluate(questions, userAnswers);
+    verify(resultService).provideResult(resultScore, userName);
   }
 }

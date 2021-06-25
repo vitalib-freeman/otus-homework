@@ -5,13 +5,13 @@ public class Answer {
   private int id;
   private boolean isCorrect;
 
-  public Answer(String text, Integer id, boolean isCorrect) {
+  public Answer(String text, int id, boolean isCorrect) {
     this.text = text;
     this.id = id;
     this.isCorrect = isCorrect;
   }
 
-  public Answer(Integer id) {
+  public Answer(int id) {
     this.id = id;
   }
 

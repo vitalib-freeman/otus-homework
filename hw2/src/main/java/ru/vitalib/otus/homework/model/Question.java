@@ -3,7 +3,7 @@ package ru.vitalib.otus.homework.model;
 import java.util.List;
 
 public class Question {
-    private Integer id;
+    private int id;
     private String text;
     private List<Answer> answers;
 
@@ -25,11 +25,11 @@ public class Question {
         return this;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 }

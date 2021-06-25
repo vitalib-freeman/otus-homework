@@ -6,6 +6,7 @@ import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 import ru.vitalib.otus.homework.model.Score;
 import ru.vitalib.otus.homework.model.UserAnswers;
+import ru.vitalib.otus.homework.settings.SettingsHolder;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ class EvaluationServiceImplTest {
   @Test
   public void testCorrectAnswer() {
     Question question = prepareSimpleQuestion();
-    SettingsService settingService = mock(SettingsService.class);
+    SettingsHolder settingService = mock(SettingsHolder.class);
 
     EvaluationService evaluationService = new EvaluationServiceImpl(settingService);
     Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(0))));
@@ -31,7 +32,7 @@ class EvaluationServiceImplTest {
   @Test
   public void testIncorrectAnswer() {
     Question question = prepareSimpleQuestion();
-    SettingsService settingService = mock(SettingsService.class);
+    SettingsHolder settingService = mock(SettingsHolder.class);
 
     EvaluationService evaluationService = new EvaluationServiceImpl(settingService);
     Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(1))));
@@ -43,7 +44,7 @@ class EvaluationServiceImplTest {
   @Test
   public void testMultipleIncorrectAnswers() {
     Question question = prepareSimpleQuestion();
-    SettingsService settingService = mock(SettingsService.class);
+    SettingsHolder settingService = mock(SettingsHolder.class);
 
     EvaluationService evaluationService = new EvaluationServiceImpl(settingService);
     Score score = evaluationService.evaluate(List.of(question), new UserAnswers(Map.of(0, Set.of(0, 1))));

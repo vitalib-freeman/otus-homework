@@ -1,4 +1,4 @@
-package ru.vitalib.otus.homework;
+package ru.vitalib.otus.homework.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

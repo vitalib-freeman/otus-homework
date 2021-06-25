@@ -5,6 +5,7 @@ import ru.vitalib.otus.homework.model.Answer;
 import ru.vitalib.otus.homework.model.Question;
 import ru.vitalib.otus.homework.model.Score;
 import ru.vitalib.otus.homework.model.UserAnswers;
+import ru.vitalib.otus.homework.settings.SettingsHolder;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +14,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class EvaluationServiceImpl implements EvaluationService {
-  private final SettingsService settingService;
+  private final SettingsHolder settingService;
 
-  public EvaluationServiceImpl(SettingsService settingService) {
+  public EvaluationServiceImpl(SettingsHolder settingService) {
     this.settingService = settingService;
   }
 
@@ -28,7 +29,7 @@ public class EvaluationServiceImpl implements EvaluationService {
        .filter(questionId -> correctAnswers.get(questionId).size() == userAnswers.getAnswersIds(questionId).size())
        .count();
     boolean hasPass = totalCorrect >= settingService.getMinimalScore();
-    return new Score((long) allQuestions.size(), totalCorrect, hasPass);
+    return new Score(allQuestions.size(), (int) totalCorrect, hasPass);
   }
 
   private Set<Integer> getCorrectAnswersIds(Question question) {
