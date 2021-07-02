@@ -1,0 +1,3 @@
+app:
+  minScore: 3
+  csvResourcePath: "/questions.csv"
