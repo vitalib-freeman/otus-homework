@@ -7,7 +7,6 @@ import java.util.Locale;
 
 @Service
 public class UserServiceImpl implements UserService {
-  private static final String WELCOME_MESSAGE = "Hello, what is your name?";
   private final InputOutputService inputOutputService;
   private final MessageSource messageSource;
 

@@ -4,11 +4,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.vitalib.otus.homework.model.Score;
 
+import java.util.Locale;
+
 @Service
 public class ResultsServiceImpl implements ResultsService {
-  private static final String SCORE_MESSAGE = "%s, your score is %d of %d";
-  private static final String TEST_RESULT_MESSAGE = "Result: %s pass";
-
   private final InputOutputService inputOutputService;
   private final MessageSource messageSource;
 
@@ -19,8 +18,9 @@ public class ResultsServiceImpl implements ResultsService {
 
   @Override
   public void provideResult(Score score, String userName) {
-    inputOutputService.write(String.format(messageSource.getMessage(""), userName, score.getQuestionsWithCorrectAnswer(),
-      score.getTotalQuestions()));
-    inputOutputService.write(String.format(TEST_RESULT_MESSAGE, score.isHasPass() ? "" : "not"));
+    inputOutputService.write(messageSource.getMessage("user.score", new Object[] {userName, score.getQuestionsWithCorrectAnswer(),
+      score.getTotalQuestions()}, Locale.getDefault()));
+    String resultTranslation = score.isHasPass() ? "user.pass" : "user.notpass";
+    inputOutputService.write(messageSource.getMessage(resultTranslation, null, Locale.getDefault()));
   }
 }
