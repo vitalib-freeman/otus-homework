@@ -1,3 +1,7 @@
 app:
   minScore: 3
-  csvResourcePath: "/questions.csv"
+  csvResourcePath: "questions.csv"
+
+spring:
+  messages:
+    basename: "i18n/messages"
